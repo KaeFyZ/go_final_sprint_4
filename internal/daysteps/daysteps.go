@@ -27,7 +27,7 @@ func parsePackage(data string) (int, time.Duration, error) {
 
 	//Проверить, чтобы длина слайса была равна 2, так как в строке данных у нас количество шагов и продолжительность.
 	if len(str) != 2 {
-		return 0, 0, errors.New("")
+		return 0, 0, errors.New("incorrect input string format")
 	}
 
 	//Преобразовать первый элемент слайса (количество шагов) в тип int. Обработать возможные ошибки.

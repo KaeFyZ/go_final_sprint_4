@@ -25,7 +25,7 @@ func parseTraining(data string) (int, string, time.Duration, error) {
 
 	//Проверить, чтобы длина слайса была равна 3, так как в строке данных у нас количество шагов, вид активности и продолжительность.
 	if len(str) != 3 {
-		return 0, "", 0, errors.New("necorrect input string format")
+		return 0, "", 0, errors.New("incorrect input string format")
 	}
 
 	//Преобразовать первый элемент слайса (количество шагов) в тип int. Обработать возможные ошибки.
