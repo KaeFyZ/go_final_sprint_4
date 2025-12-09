@@ -2,6 +2,7 @@ package spentcalories
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -20,35 +21,35 @@ const (
 // которая содержит количество шагов, вид активности и продолжительность активности.
 func parseTraining(data string) (int, string, time.Duration, error) {
 	//Разделить строку на слайс строк.
-	var Str []string = strings.Split(data, ",")
+	var str []string = strings.Split(data, ",")
 
 	//Проверить, чтобы длина слайса была равна 3, так как в строке данных у нас количество шагов, вид активности и продолжительность.
-	if len(Str) != 3 {
-		return 0, "", 0, errors.New("некорректный формат входящей строки")
+	if len(str) != 3 {
+		return 0, "", 0, errors.New("necorrect input string format")
 	}
 
 	//Преобразовать первый элемент слайса (количество шагов) в тип int. Обработать возможные ошибки.
 	//При их возникновении из функции вернуть 0 шагов, 0 продолжительность и ошибку.
-	steps, err := strconv.Atoi(string(Str[0]))
+	steps, err := strconv.Atoi(string(str[0]))
 	if err != nil {
 		return 0, "", 0, err
 	}
-	activity := string(Str[1])
+	activity := string(str[1])
 
 	//Преобразовать третий элемент слайса в time.Duration.
 	//В пакете time есть метод для парсинга строки в time.Duration.
 	//Обработать возможные ошибки. При их возникновении из функции вернуть 0 шагов, 0 продолжительность и ошибку.
-	duration, err := time.ParseDuration(string(Str[2]))
+	duration, err := time.ParseDuration(string(str[2]))
 	if err != nil {
 		return 0, "", 0, err
 	}
 
 	// проверки на корректность значений шагов и продолжительности
 	if steps <= 0 {
-		return 0, "", 0, errors.New("количество шагов должно быть больше нуля")
+		return 0, "", 0, errors.New("steps must be greater than zero")
 	}
 	if duration <= 0 {
-		return 0, "", 0, errors.New("продолжительность должна быть больше нуля")
+		return 0, "", 0, errors.New("duration must be greater than zero")
 	}
 
 	//Если всё прошло без ошибок, верните количество шагов, вид активности, продолжительность и nil (для ошибки).
@@ -123,12 +124,8 @@ func TrainingInfo(data string, weight, height float64) (string, error) {
 		return "", errors.New("неизвестный тип тренировки")
 	}
 
-	//Для каждого вида тренировки сформировать и вернуть строку, образец которой был представлен выше.
-	result := "Тип тренировки: " + activity + "\n" +
-		"Длительность: " + strconv.FormatFloat(duration.Hours(), 'f', 2, 64) + " ч.\n" +
-		"Дистанция: " + strconv.FormatFloat(distanceKm, 'f', 2, 64) + " км.\n" +
-		"Скорость: " + strconv.FormatFloat(avgSpeed, 'f', 2, 64) + " км/ч\n" +
-		"Сожгли калорий: " + strconv.FormatFloat(calories, 'f', 2, 64) + "\n"
+	//Для каждого вида тренировки сформировать и вернуть строку, образец которой был представлен выше используя fmt по шаблону "Тип тренировки: Ходьба\nДлительность: 1.00 ч.\nДистанция: 4.72 км.\nСкорость: 4.72 км/ч\nСожгли калорий: 177.19\n"
+	result := fmt.Sprintf("Тип тренировки: %s\nДлительность: %.2f ч.\nДистанция: %.2f км.\nСкорость: %.2f км/ч\nСожгли калорий: %.2f\n", activity, duration.Hours(), distanceKm, avgSpeed, calories)
 
 	return result, nil
 
@@ -139,13 +136,13 @@ func RunningSpentCalories(steps int, weight, height float64, duration time.Durat
 	//Проверить входные параметры на корректность. Если параметры некорректны, вернуть 0 калорий и соответствующую ошибку.
 	switch {
 	case weight <= 0:
-		return 0, errors.New("вес должен быть больше нуля")
+		return 0, errors.New("weight must be greater than zero")
 	case height <= 0:
-		return 0, errors.New("рост должен быть больше нуля")
+		return 0, errors.New("height must be greater than zero")
 	case steps <= 0:
-		return 0, errors.New("количество шагов должно быть больше нуля")
+		return 0, errors.New("steps must be greater than zero")
 	case duration <= 0:
-		return 0, errors.New("продолжительность должна быть больше нуля")
+		return 0, errors.New("duration must be greater than zero")
 	}
 
 	//Рассчитать среднюю скорость с помощью meanSpeed().
@@ -171,13 +168,13 @@ func WalkingSpentCalories(steps int, weight, height float64, duration time.Durat
 	//Проверить входные параметры на корректность используя switch. Если параметры некорректны, вернуть 0 калорий и соответствующую ошибку.
 	switch {
 	case weight <= 0:
-		return 0, errors.New("вес должен быть больше нуля")
+		return 0, errors.New("weight must be greater than zero")
 	case height <= 0:
-		return 0, errors.New("рост должен быть больше нуля")
+		return 0, errors.New("height must be greater than zero")
 	case steps <= 0:
-		return 0, errors.New("количество шагов должно быть больше нуля")
+		return 0, errors.New("")
 	case duration <= 0:
-		return 0, errors.New("продолжительность должна быть больше нуля")
+		return 0, errors.New("")
 	}
 
 	//Рассчитать среднюю скорость с помощью meanSpeed().

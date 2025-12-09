@@ -2,6 +2,7 @@ package daysteps
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"strconv"
 	"strings"
@@ -22,35 +23,35 @@ const (
 func parsePackage(data string) (int, time.Duration, error) {
 	//формат входящей строки: "678,0h50m"
 	//Разделить строку на слайс строк.
-	var Str []string = strings.Split(data, ",")
+	var str []string = strings.Split(data, ",")
 
 	//Проверить, чтобы длина слайса была равна 2, так как в строке данных у нас количество шагов и продолжительность.
-	if len(Str) != 2 {
-		return 0, 0, errors.New("некорректный формат входящей строки")
+	if len(str) != 2 {
+		return 0, 0, errors.New("")
 	}
 
 	//Преобразовать первый элемент слайса (количество шагов) в тип int. Обработать возможные ошибки.
 	//При их возникновении из функции вернуть 0 шагов, 0 продолжительность и ошибку.
-	steps, err := strconv.Atoi(Str[0])
+	steps, err := strconv.Atoi(str[0])
 	if err != nil {
-		return 0, 0, errors.New("ошибка преобразования количества шагов: " + err.Error())
+		return 0, 0, err
 	}
 
 	//Проверить: количество шагов должно быть больше 0. Если это не так, вернуть нули и ошибку.
 	if steps <= 0 {
-		return 0, 0, errors.New("количество шагов должно быть больше нуля")
+		return 0, 0, errors.New("steps must be greater than zero")
 	}
 
 	//Преобразовать второй элемент слайса в time.Duration. В пакете time есть метод для парсинга строки в time.Duration.
 	//Обработать возможные ошибки.
 	//При их возникновении из функции вернуть 0 шагов, 0 продолжительность и ошибку.
-	duration, err := time.ParseDuration(Str[1])
+	duration, err := time.ParseDuration(str[1])
 	if err != nil {
-		return 0, 0, errors.New("ошибка преобразования продолжительности: " + err.Error())
+		return 0, 0, err
 	}
 
 	if duration <= 0 {
-		return 0, 0, errors.New("продолжительность должна быть больше нуля")
+		return 0, 0, errors.New("duration must be greater than zero")
 	}
 
 	//Если всё прошло без ошибок, верните количество шагов, продолжительность и nil (для ошибки).
@@ -75,7 +76,8 @@ func DayActionInfo(data string, weight, height float64) string {
 	}
 
 	//Проверить, чтобы количество шагов было больше 0. В противном случае вернуть пустую строку.
-	if steps < 0 {
+	if steps <= 0 {
+		log.Println("steps must be greater than zero")
 		return ""
 	}
 
@@ -97,10 +99,9 @@ func DayActionInfo(data string, weight, height float64) string {
 	//Количество шагов: 792.
 	//Дистанция составила 0.51 км.
 	//Вы сожгли 221.33 ккал.
+	//используя fmt
+	result := fmt.Sprintf("Количество шагов: %d.\nДистанция составила %.2f км.\nВы сожгли %.2f ккал.\n", steps, distanceKm, calories)
 
-	result := "Количество шагов: " + strconv.Itoa(steps) + ".\n" +
-		"Дистанция составила " + strconv.FormatFloat(distanceKm, 'f', 2, 64) + " км.\n" +
-		"Вы сожгли " + strconv.FormatFloat(calories, 'f', 2, 64) + " ккал.\n"
 	return result
 
 }
